@@ -9,7 +9,7 @@ ArrayList<String> data;
 void setup() {
   word = "";
   size(400, 400);
-  fileurl = "./data/text.txt";
+  fileurl = "https://github.com/Framepatch/Java/blob/master/Processing/Acrostic/data/text.txt";
   rawdata = loadStrings(fileurl);
   data = clean(rawdata);
 }

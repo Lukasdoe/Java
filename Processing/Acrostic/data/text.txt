@@ -1,49 +1,7 @@
-his mathematical art is cool because of its consistency and its always repeating patterns. You can create your own benice fractal spirograph with this amazing javascript. (As always, the whole project is available on github.com/framepatch)
+An acrostic is a poem (or other form of writing) in which the first letter (or syllable, or word) of each line (or paragraph, or other recurring feature in the text) spells out a word, message or the alphabet.[1] The word comes from the French acrostiche from post-classical Latin acrostichis, from Koine Greek ἀκροστιχίς, from Ancient Greek ἄκρος "highest, topmost" and στίχος "verse").[2] As a form of constrained writing, an acrostic can be used as a mnemonic device to aid memory retrieval.
 
-The code is written in Javascript with the help of the creative art library p5.js, if you have further questions on the code, please let me know in the comments!
+Relatively simple acrostics may merely spell out the letters of the alphabet in order; such an acrostic may be called an 'alphabetical acrostic' or Abecedarius. These acrostics occur in the first four of the five songs that make up the Book of Lamentations, in the praise of the good wife in Proverbs 31, 10-31, and in Psalms 25, 34, 37, 111, 112, 119 and 145 of the Hebrew Bible.[3] Notable among the acrostic Psalms is the long Psalm 119, which typically is printed in subsections named after the 22 letters of the Hebrew alphabet, each section consisting of 8 verses, each of which begins with the same letter of the alphabet and the entire psalm consisting of 22 x 8 = 176 verses; and Psalm 145, which is recited three times a day in the Jewish services. Some acrostic psalms are technically imperfect. E.g. Psalm 9 and Psalm 10 appear to constitute a single acrostic psalm together, but the length assigned to each letter is unequal and five of the 22 letters of the Hebrew alphabet are not represented and the sequence of two letters is reversed. In Psalm 25 one Hebrew letter is not represented, the following letter (Resh) repeated. In Psalm 34 the current final verse, 23, does fit verse 22 in content, but makes line too long. In Psalms 37 and 111 the numbering of verses and the division into lines are interfering with each other; as a result in Psalm 37, for the letters Daleth and Kaph there is only one verse, and the letter Ayin is not represented. Psalm 111 and 112 have 22 lines, but 10 verses. Psalm 145 does not represent the letter Nun, having 21 one verses, but one Qumran manuscript of this Psalm does have that missing line, which agrees with the Septuagint. Acrostics prove that the texts in question were originally composed in writing, rather than having existed in oral tradition before being put into writing.
 
-In general, you start by just clicking the “Add a circle” button on the right control panel.
+Acrostics are common in medieval literature, where they usually serve to highlight the name of the poet or his patron, or to make a prayer to a saint. They are most frequent in verse works but can also appear in prose. The Middle High German poet Rudolf von Ems for example opens all his great works with an acrostic of his name, and his world chronicle marks the beginning of each age with an acrostic of the key figure (Moses, David, etc.). In chronicles, acrostics are common in German and English but rare in other languages.[4]
 
-The circle you just created will now spin around the 1st circle with the given attributes, to change these, just click onto the circle’s slot on the control panel and you will see 3 parameters.
-
-Radius – the radius of the circle. (If set to negative, you will have the circle inside of its parent-circle)
-
-Speed – the speed of the circle by which it is going to be rotating around its parent-circle.
-
-Angle – the angle (from its parent-circle) at which the circle will start a new round
-
- 
-
-In order to see some of the changes and begin a new print, you have to press the Restart button.
-
-All circles will be removed with the Remove all button.
-
-Save canvas gives you a .jpg image of your current print.
-
-To remove the printer from your canvas, just uncheck “Show printer”.
-
- 
-
-The Speed up textbox allows you to set how often per drawing run the new frame should be generated. (higher values cause more lag on slower machines)
-
-The Max curve textbox is used to set the maximum of curve points on the canvas. (every point has to be stored into a 2D-Array, so the more points, the longer the drawing will last.
-
-The Presets tab is not jet supported.
-
- 
-
-Playing around with this system of a spirograph printer using the benice equation meant hours of fun for me, so I really hope this little coded toy could save you a rainy day.
-
- 
-
-Credits for the idea of such patterns go out to this guy who started the patterns using a software called geogebra.
-
- 
-
-When you have recommendations for the code, please feel free to write a comment or make a Github pull request.
-
- 
-
-This work is licensed under a Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License.
-
-How razorback-jumping frogs can level six piqued gymnasts!
+Often the ease of detectability of an acrostic can depend on the intention of its creator. In some cases an author may desire an acrostic to have a better chance of being perceived by an observant reader, such as the acrostic contained in the Hypnerotomachia Poliphili (where the key capital letters are decorated with ornate embellishments). However, acrostics may also be used as a form of steganography, where the author seeks to conceal the message rather than proclaim it. This might be achieved by making the key letters uniform in appearance with the surrounding text, or by aligning the words in such a way that the relationship between the key letters is less obvious. This is referred to as null ciphers in steganography, using the first letter of each word to form a hidden message in an otherwise innocuous text.[5] Using letters to hide a message, as in acrostic ciphers, was popular during the Renaissance, and could employ various methods of enciphering, such as selecting other letters than initials based on a repeating pattern (equidistant letter sequences), or even concealing the message by starting at the end of the text and working backwards.[6]

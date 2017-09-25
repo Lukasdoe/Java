@@ -14,6 +14,8 @@ import java.io.IOException;
 
 public class GraphicsFlyer extends PApplet {
 
+//Code by Lukas D\u00f6llerer, FramePatch
+
 Point[][] image;
 PVector acc;
 PVector vel;
@@ -67,18 +69,22 @@ public void draw() {
   if (ballpos.x > width) {
     ballpos.x -= 7;
     vel.mult(-1);
+    vel.add(PVector.random2D());
   }
   else if (ballpos.x < 0) {
     ballpos.x += 7;
     vel.mult(-1);
+    vel.add(PVector.random2D());
   }
   else if (ballpos.y < 0) {
     ballpos.y += 7;
     vel.mult(-1);
+    vel.add(PVector.random2D());
   }
   else if (ballpos.y > height) {
     ballpos.y -=7 ;
     vel.mult(-1);
+    vel.add(PVector.random2D());
   }
 }
 

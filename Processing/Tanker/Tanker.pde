@@ -15,6 +15,7 @@ void draw(){
   background(70);
   
   maze.updateTanks(keys);
+  maze.updateBullets();
   maze.display();
 }
 

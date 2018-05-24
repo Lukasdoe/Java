@@ -11,9 +11,11 @@ class Maze{
   Cell grid[][];
   
   ArrayList<Cell> stack;
+  ArrayList<Bullet> bullets;
   
   Maze(int _s){
     tanks = new ArrayList<Tank>();
+    bullets = new ArrayList<Bullet>();
     s = _s;
     cols = floor(width / s);
     rows = floor(height / s);
@@ -33,19 +35,39 @@ class Maze{
   }
   
   void addTank(PVector _pos, PVector _dir, int _up, int _left, int _right, int _down, int _shoot, color _col){
-    tanks.add(new Tank(_pos, _dir, _up, _left, _right, _down, _shoot, _col));
+    Cell cell = getCell(_pos.x, _pos.y);
+    tanks.add(new Tank(new PVector(cell.i * cell.size + cell.size /2, cell.j * cell.size + cell.size / 2), _dir, _up, _left, _right, _down, _shoot, _col));
   }
   
-  Cell getCell(float x, float y, Cell[][] grid, int size){
-    if(floor(x/size) >= 0 && floor(y/size) >= 0){
-      return grid[floor(x/size)][floor(y/size)];
+  Cell getCell(float x, float y){
+    if(floor(x/s) >= 0 && floor(y/s) >= 0 && floor(x/s) < cols && floor(y/s) < rows){
+      return grid[floor(x/s)][floor(y/s)];
     }
     return null;
   }
   
   void updateTanks(boolean[] pressed){
    for(Tank tank : tanks){
-     tank.update(pressed, getCell(tank.pos.x, tank.pos.y, grid, s));//, getCell(tank.pos.x - s, tank.pos.y - s, grid, s), getCell(tank.pos.x - s, tank.pos.y + s, grid, s), getCell(tank.pos.x + s, tank.pos.y - s, grid, s), getCell(tank.pos.x + s, tank.pos.y + s, grid, s));
+     Cell cell = getCell(tank.pos.x, tank.pos.y);
+     tank.update(pressed, cell, isEdge(cell.i, cell.j));
+     if(pressed[tank.shoot]){
+        bullets.add(new Standart_Bullet(tank.pos.copy(), tank.dir.copy(), 5)); 
+        println(tank.pos.copy().x);
+        println(bullets.get(0).pos);
+        pressed[tank.shoot] = false;
+     }
+   }
+  }
+  
+  void updateBullets(){
+    for(Bullet bullet : bullets){
+     if(bullet != null && bullet.pos.x >= 0 && bullet.pos.y >= 0 && bullet.pos.x < width && bullet.pos.y < height){
+       Cell cell = getCell(bullet.pos.x, bullet.pos.y);
+       if(cell != null){
+         bullet.update(cell, isEdge(4, 4));
+         bullet.display();
+       }
+     }
    }
   }
   
@@ -95,5 +117,18 @@ class Maze{
     for(Tank tank : tanks){
       tank.display(); 
     }
+  }
+  
+  boolean[] isEdge(int i, int j){
+    boolean[] edges = new boolean[4];
+    Cell cell1 = getCell(i - 1, j - 1);
+    Cell cell2 = getCell(i - 1, j + 1);
+    Cell cell3 = getCell(i + 1, j - 1);
+    Cell cell4 = getCell(i + 1, j + 1);
+    if(cell1 != null && (cell1.walls[1] || cell1.walls[2])) edges[0] = true; 
+    if(cell2 != null && (cell2.walls[0] || cell2.walls[1])) edges[1] = true; 
+    if(cell3 != null && (cell3.walls[2] || cell3.walls[3])) edges[2] = true; 
+    if(cell4 != null && (cell4.walls[3] || cell4.walls[0])) edges[3] = true; 
+    return edges;
   }
 }

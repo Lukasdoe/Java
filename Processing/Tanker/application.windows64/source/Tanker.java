@@ -31,6 +31,7 @@ public void draw(){
   background(70);
   
   maze.updateTanks(keys);
+  maze.updateBullets();
   maze.display();
 }
 
@@ -40,6 +41,18 @@ public void keyPressed(){
 
 public void keyReleased(){
   keys[keyCode] = false;
+}
+abstract class Bullet{
+ PVector pos;
+ PVector dir;
+ float speed;
+ float w;
+ float h; 
+ 
+ public abstract void update(Cell cell, boolean[] edges);
+ public abstract void display();
+ public abstract boolean collide(PVector pos, Cell cell, boolean[] edges, PVector dir);
+ public abstract PVector getDistance( float x1, float y1, float x2, float y2, float x, float y );
 }
 class Cell{
   int i;
@@ -103,9 +116,11 @@ class Maze{
   Cell grid[][];
   
   ArrayList<Cell> stack;
+  ArrayList<Bullet> bullets;
   
   Maze(int _s){
     tanks = new ArrayList<Tank>();
+    bullets = new ArrayList<Bullet>();
     s = _s;
     cols = floor(width / s);
     rows = floor(height / s);
@@ -125,19 +140,39 @@ class Maze{
   }
   
   public void addTank(PVector _pos, PVector _dir, int _up, int _left, int _right, int _down, int _shoot, int _col){
-    tanks.add(new Tank(_pos, _dir, _up, _left, _right, _down, _shoot, _col));
+    Cell cell = getCell(_pos.x, _pos.y);
+    tanks.add(new Tank(new PVector(cell.i * cell.size + cell.size /2, cell.j * cell.size + cell.size / 2), _dir, _up, _left, _right, _down, _shoot, _col));
   }
   
-  public Cell getCell(float x, float y, Cell[][] grid, int size){
-    if(floor(x/size) >= 0 && floor(y/size) >= 0){
-      return grid[floor(x/size)][floor(y/size)];
+  public Cell getCell(float x, float y){
+    if(floor(x/s) >= 0 && floor(y/s) >= 0 && floor(x/s) < cols && floor(y/s) < rows){
+      return grid[floor(x/s)][floor(y/s)];
     }
     return null;
   }
   
   public void updateTanks(boolean[] pressed){
    for(Tank tank : tanks){
-     tank.update(pressed, getCell(tank.pos.x, tank.pos.y, grid, s));//, getCell(tank.pos.x - s, tank.pos.y - s, grid, s), getCell(tank.pos.x - s, tank.pos.y + s, grid, s), getCell(tank.pos.x + s, tank.pos.y - s, grid, s), getCell(tank.pos.x + s, tank.pos.y + s, grid, s));
+     Cell cell = getCell(tank.pos.x, tank.pos.y);
+     tank.update(pressed, cell, isEdge(cell.i, cell.j));
+     if(pressed[tank.shoot]){
+        bullets.add(new Standart_Bullet(tank.pos.copy(), tank.dir.copy(), 5)); 
+        println(tank.pos.copy().x);
+        println(bullets.get(0).pos);
+        pressed[tank.shoot] = false;
+     }
+   }
+  }
+  
+  public void updateBullets(){
+    for(Bullet bullet : bullets){
+     if(bullet != null && bullet.pos.x >= 0 && bullet.pos.y >= 0 && bullet.pos.x < width && bullet.pos.y < height){
+       Cell cell = getCell(bullet.pos.x, bullet.pos.y);
+       if(cell != null){
+         bullet.update(cell, isEdge(4, 4));
+         bullet.display();
+       }
+     }
    }
   }
   
@@ -188,6 +223,102 @@ class Maze{
       tank.display(); 
     }
   }
+  
+  public boolean[] isEdge(int i, int j){
+    boolean[] edges = new boolean[4];
+    Cell cell1 = getCell(i - 1, j - 1);
+    Cell cell2 = getCell(i - 1, j + 1);
+    Cell cell3 = getCell(i + 1, j - 1);
+    Cell cell4 = getCell(i + 1, j + 1);
+    if(cell1 != null && (cell1.walls[1] || cell1.walls[2])) edges[0] = true; 
+    if(cell2 != null && (cell2.walls[0] || cell2.walls[1])) edges[1] = true; 
+    if(cell3 != null && (cell3.walls[2] || cell3.walls[3])) edges[2] = true; 
+    if(cell4 != null && (cell4.walls[3] || cell4.walls[0])) edges[3] = true; 
+    return edges;
+  }
+}
+class Standart_Bullet extends Bullet{
+ 
+ Standart_Bullet(PVector _pos, PVector _dir, float _speed){
+   pos = _pos;
+   println(pos.x);
+   dir = _dir;
+   speed = _speed;
+    w = 5;
+    h = 5; 
+ }
+ 
+ public void update(Cell cell, boolean[] edges){
+   if(!collide(pos.copy().add(dir.copy().mult(speed)), cell, edges, dir)){
+      pos.add(dir.copy().mult(speed));
+    }
+ }
+ 
+ public void display(){
+   fill(20);
+   stroke(20);
+   ellipse(pos.x, pos.y, 5, 5);
+ }
+
+   public boolean collide(PVector pos, Cell cell, boolean[] edges, PVector dir){ //edges is TL BL TR BR
+    int x = cell.i * cell.size;
+    int y = cell.j * cell.size;
+    if(cell.walls[0] && getDistance(x, y, x + cell.size, y, pos.x, pos.y).z < 2){  //top
+      dir.y *= -1;
+      return true;
+    }
+    if(cell.walls[1] && getDistance(x + cell.size, y, x + cell.size, y + cell.size, pos.x, pos.y).z < 2){  //right
+      dir.x *= -1;
+      return true;
+    }
+    if(cell.walls[2] && getDistance(x + cell.size, y + cell.size, x, y + cell.size, pos.x, pos.y ).z < 2){  //bottom
+      dir.y *= -1;
+      return true;
+    }
+    if(cell.walls[3] && getDistance(x, y + cell.size, x, y, pos.x, pos.y).z < 2){  //left
+      dir.x *= -1;
+      return true;
+    }
+    //else if((edges[0] && dist(cell.i * cell.size, cell.j * cell.size, pos.x, pos.y) < w / 2 - 1) ||
+    //  (edges[1] && dist(cell.i * cell.size, cell.j * cell.size + cell.size, pos.x, pos.y) < w / 2 - 1) ||
+    //  (edges[2] && dist(cell.i * cell.size + cell.size, cell.j * cell.size, pos.x, pos.y) < w / 2 - 1) ||
+    //  (edges[3] && dist(cell.i * cell.size + cell.size, cell.j * cell.size + cell.size, pos.x, pos.y) < w / 2 - 1)){
+    //  return true;
+    //}
+    return false; 
+  }
+  
+  public PVector getDistance( float x1, float y1, float x2, float y2, float x, float y ){
+    PVector result = new PVector(); 
+    
+    float dx = x2 - x1; 
+    float dy = y2 - y1; 
+    float d = sqrt( dx*dx + dy*dy ); 
+    float ca = dx/d; // cosine
+    float sa = dy/d; // sine 
+    
+    float mX = (-x1+x)*ca + (-y1+y)*sa; 
+    
+    if( mX <= 0 ){
+      result.x = x1; 
+      result.y = y1; 
+    }
+    else if( mX >= d ){
+      result.x = x2; 
+      result.y = y2; 
+     }
+    else{
+      result.x = x1 + mX*ca; 
+      result.y = y1 + mX*sa; 
+    }
+    
+    dx = x - result.x; 
+    dy = y - result.y; 
+    result.z = sqrt( dx*dx + dy*dy ); 
+    
+    return result;   
+  }
+
 }
 
 class Tank{
@@ -219,12 +350,12 @@ class Tank{
     col = _col;
   }
   
-  public void update(boolean[] pressed, Cell cell){//, Cell nCellTL, Cell nCellBL, Cell nCellTR, Cell nCellBR){
-    if(pressed[up] && !collide(pos.copy().add(dir.copy().mult(speedfactor)), cell)){//, nCellTL, nCellBL, nCellTR, nCellBR)){
+  public void update(boolean[] pressed, Cell cell, boolean[] edges){
+    if(pressed[up] && !collide(pos.copy().add(dir.copy().mult(speedfactor)), cell, edges)){
       pos.add(dir.copy().mult(speedfactor));
       speedfactor += 0.01f;
     }
-    else if(pressed[down] && !collide(pos.copy().add(dir.copy().mult(-speedfactor)), cell)){//, nCellTL, nCellBL, nCellTR, nCellBR)){
+    else if(pressed[down] && !collide(pos.copy().add(dir.copy().mult(-speedfactor)), cell, edges)){
       pos.add(dir.copy().mult(-speedfactor));
       speedfactor += 0.01f;
     }
@@ -238,7 +369,7 @@ class Tank{
     cell.highlight();
   }
   
-  public boolean collide(PVector pos, Cell cell){//, Cell nCellTL, Cell nCellBL, Cell nCellTR, Cell nCellBR){
+  public boolean collide(PVector pos, Cell cell, boolean[] edges){ //edges is TL BL TR BR
     int x = cell.i * cell.size;
     int y = cell.j * cell.size;
     if((cell.walls[0] && getDistance(x, y, x + cell.size, y, pos.x, pos.y - w / 2).z < 2) ||                                  //top
@@ -247,26 +378,12 @@ class Tank{
       (cell.walls[3] && getDistance(x, y + cell.size, x, y, pos.x - w / 2, pos.y).z < 2)){                                    //left
       return true;
     }
-    //else if(nCellTL != null && ((nCellTL.walls[1] && 
-    //getDistance(x + nCellTL.size, y, x + nCellTL.size, y + nCellTL.size, pos.x + w / 2, pos.y).z < 2) ||          
-    //(nCellTL.walls[2] && getDistance(x + nCellTL.size, y + nCellTL.size, x, y + nCellTL.size, pos.x, pos.y + w / 2).z < 2))){
-    //  return true;
-    //}
-    //else if(nCellBL != null &&
-    //((nCellBL.walls[0] && getDistance(x, y, x + nCellBL.size, y, pos.x, pos.y - w / 2).z < 2) ||                                  
-    //  (nCellBL.walls[1] && getDistance(x + nCellBL.size, y, x + nCellBL.size, y + nCellBL.size, pos.x + w / 2, pos.y).z < 2))){
-    //  return true;
-    //}
-    //else if(nCellTR != null &&
-    //((nCellTR.walls[2] && getDistance(x + nCellTR.size, y + nCellTR.size, x, y + nCellTR.size, pos.x, pos.y + w / 2).z < 2) ||          
-    //  (nCellTR.walls[3] && getDistance(x, y + nCellTR.size, x, y, pos.x - w / 2, pos.y).z < 2))){
-    //  return true;
-    //}
-    //else if(nCellBR != null &&
-    //((nCellBR.walls[1] && getDistance(x + nCellBR.size, y, x + nCellBR.size, y + nCellBR.size, pos.x + w / 2, pos.y).z < 2) ||          
-    //  (nCellBR.walls[2] && getDistance(x + nCellBR.size, y + nCellBR.size, x, y + nCellBR.size, pos.x, pos.y + w / 2).z < 2))){
-    //  return true;
-    //}
+    else if((edges[0] && dist(cell.i * cell.size, cell.j * cell.size, pos.x, pos.y) < h / 2) ||
+      (edges[1] && dist(cell.i * cell.size, cell.j * cell.size + cell.size, pos.x, pos.y) < h / 2) ||
+      (edges[2] && dist(cell.i * cell.size + cell.size, cell.j * cell.size, pos.x, pos.y) < h / 2) ||
+      (edges[3] && dist(cell.i * cell.size + cell.size, cell.j * cell.size + cell.size, pos.x, pos.y) < h / 2)){
+      return true;
+    }
     else{
      return false; 
     }

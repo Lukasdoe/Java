@@ -28,12 +28,12 @@ class Tank{
     col = _col;
   }
   
-  void update(boolean[] pressed, Cell cell){//, Cell nCellTL, Cell nCellBL, Cell nCellTR, Cell nCellBR){
-    if(pressed[up] && !collide(pos.copy().add(dir.copy().mult(speedfactor)), cell)){//, nCellTL, nCellBL, nCellTR, nCellBR)){
+  void update(boolean[] pressed, Cell cell, boolean[] edges){
+    if(pressed[up] && !collide(pos.copy().add(dir.copy().mult(speedfactor)), cell, edges)){
       pos.add(dir.copy().mult(speedfactor));
       speedfactor += 0.01;
     }
-    else if(pressed[down] && !collide(pos.copy().add(dir.copy().mult(-speedfactor)), cell)){//, nCellTL, nCellBL, nCellTR, nCellBR)){
+    else if(pressed[down] && !collide(pos.copy().add(dir.copy().mult(-speedfactor)), cell, edges)){
       pos.add(dir.copy().mult(-speedfactor));
       speedfactor += 0.01;
     }
@@ -47,7 +47,7 @@ class Tank{
     cell.highlight();
   }
   
-  boolean collide(PVector pos, Cell cell){//, Cell nCellTL, Cell nCellBL, Cell nCellTR, Cell nCellBR){
+  boolean collide(PVector pos, Cell cell, boolean[] edges){ //edges is TL BL TR BR
     int x = cell.i * cell.size;
     int y = cell.j * cell.size;
     if((cell.walls[0] && getDistance(x, y, x + cell.size, y, pos.x, pos.y - w / 2).z < 2) ||                                  //top
@@ -56,26 +56,12 @@ class Tank{
       (cell.walls[3] && getDistance(x, y + cell.size, x, y, pos.x - w / 2, pos.y).z < 2)){                                    //left
       return true;
     }
-    //else if(nCellTL != null && ((nCellTL.walls[1] && 
-    //getDistance(x + nCellTL.size, y, x + nCellTL.size, y + nCellTL.size, pos.x + w / 2, pos.y).z < 2) ||          
-    //(nCellTL.walls[2] && getDistance(x + nCellTL.size, y + nCellTL.size, x, y + nCellTL.size, pos.x, pos.y + w / 2).z < 2))){
-    //  return true;
-    //}
-    //else if(nCellBL != null &&
-    //((nCellBL.walls[0] && getDistance(x, y, x + nCellBL.size, y, pos.x, pos.y - w / 2).z < 2) ||                                  
-    //  (nCellBL.walls[1] && getDistance(x + nCellBL.size, y, x + nCellBL.size, y + nCellBL.size, pos.x + w / 2, pos.y).z < 2))){
-    //  return true;
-    //}
-    //else if(nCellTR != null &&
-    //((nCellTR.walls[2] && getDistance(x + nCellTR.size, y + nCellTR.size, x, y + nCellTR.size, pos.x, pos.y + w / 2).z < 2) ||          
-    //  (nCellTR.walls[3] && getDistance(x, y + nCellTR.size, x, y, pos.x - w / 2, pos.y).z < 2))){
-    //  return true;
-    //}
-    //else if(nCellBR != null &&
-    //((nCellBR.walls[1] && getDistance(x + nCellBR.size, y, x + nCellBR.size, y + nCellBR.size, pos.x + w / 2, pos.y).z < 2) ||          
-    //  (nCellBR.walls[2] && getDistance(x + nCellBR.size, y + nCellBR.size, x, y + nCellBR.size, pos.x, pos.y + w / 2).z < 2))){
-    //  return true;
-    //}
+    else if((edges[0] && dist(cell.i * cell.size, cell.j * cell.size, pos.x, pos.y) < h / 2) ||
+      (edges[1] && dist(cell.i * cell.size, cell.j * cell.size + cell.size, pos.x, pos.y) < h / 2) ||
+      (edges[2] && dist(cell.i * cell.size + cell.size, cell.j * cell.size, pos.x, pos.y) < h / 2) ||
+      (edges[3] && dist(cell.i * cell.size + cell.size, cell.j * cell.size + cell.size, pos.x, pos.y) < h / 2)){
+      return true;
+    }
     else{
      return false; 
     }

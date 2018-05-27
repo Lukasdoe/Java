@@ -39,6 +39,13 @@ class Maze{
     tanks.add(new Tank(new PVector(cell.i * cell.size + cell.size /2, cell.j * cell.size + cell.size / 2), _dir, _up, _left, _right, _down, _shoot, _col));
   }
   
+  void revive(){
+    for(Tank tank : tanks){
+      Cell cell = getCell(random(width * 0.1 , width - width * 0.1), random(height * 0.1 , height - height * 0.1));
+      tank.revive(new PVector(cell.i * cell.size + cell.size /2, cell.j * cell.size + cell.size / 2), PVector.random2D());
+    }
+  }
+  
   Cell getCell(float x, float y){
     if(floor(x/s) >= 0 && floor(y/s) >= 0 && floor(x/s) < cols && floor(y/s) < rows){
       return grid[floor(x/s)][floor(y/s)];
@@ -51,9 +58,7 @@ class Maze{
      Cell cell = getCell(tank.pos.x, tank.pos.y);
      tank.update(pressed, cell, isEdge(cell.i, cell.j));
      if(pressed[tank.shoot]){
-        bullets.add(new Standart_Bullet(tank.pos.copy(), tank.dir.copy(), 5)); 
-        println(tank.pos.copy().x);
-        println(bullets.get(0).pos);
+        bullets.add(new Standart_Bullet(tank.pos.copy().add(tank.dir.copy().setMag(tank.h)), tank.dir.copy(), 5.2)); 
         pressed[tank.shoot] = false;
      }
    }
@@ -64,9 +69,23 @@ class Maze{
      if(bullet != null && bullet.pos.x >= 0 && bullet.pos.y >= 0 && bullet.pos.x < width && bullet.pos.y < height){
        Cell cell = getCell(bullet.pos.x, bullet.pos.y);
        if(cell != null){
-         bullet.update(cell, isEdge(4, 4));
+         bullet.update(cell, isEdge(cell.i, cell.j));
          bullet.display();
        }
+       for(Tank tank : tanks){
+        if(dist(bullet.pos.x, bullet.pos.y, tank.pos.x, tank.pos.y) < tank.h){
+          background(255, 0, 0, 20);
+          for(Tank otherTanks : tanks) if(otherTanks != tank) otherTanks.score++;
+          createMaze();
+          maze.revive();
+          bullets.clear();
+          return;
+        }
+       }
+     }
+     else{
+       bullets.remove(bullet);
+       break;
      }
    }
   }
@@ -116,6 +135,11 @@ class Maze{
     
     for(Tank tank : tanks){
       tank.display(); 
+      textSize(tank.w);
+      fill(tank.col, 95);
+      textSize(tank.w * 2);
+      if(tanks.indexOf(tank) == 0) text(tank.score, s / 3 , s / 2);
+      else text(tank.score, s * cols - s * 2 / 3, s / 2); 
     }
   }
   

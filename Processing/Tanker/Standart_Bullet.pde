@@ -2,11 +2,10 @@ class Standart_Bullet extends Bullet{
  
  Standart_Bullet(PVector _pos, PVector _dir, float _speed){
    pos = _pos;
-   println(pos.x);
    dir = _dir;
    speed = _speed;
-    w = 5;
-    h = 5; 
+    w = 7;
+    h = 7; 
  }
  
  void update(Cell cell, boolean[] edges){
@@ -40,12 +39,22 @@ class Standart_Bullet extends Bullet{
       dir.x *= -1;
       return true;
     }
-    //else if((edges[0] && dist(cell.i * cell.size, cell.j * cell.size, pos.x, pos.y) < w / 2 - 1) ||
-    //  (edges[1] && dist(cell.i * cell.size, cell.j * cell.size + cell.size, pos.x, pos.y) < w / 2 - 1) ||
-    //  (edges[2] && dist(cell.i * cell.size + cell.size, cell.j * cell.size, pos.x, pos.y) < w / 2 - 1) ||
-    //  (edges[3] && dist(cell.i * cell.size + cell.size, cell.j * cell.size + cell.size, pos.x, pos.y) < w / 2 - 1)){
-    //  return true;
-    //}
+    if(edges[0] && dist(cell.i * cell.size, cell.j * cell.size, pos.x, pos.y) < 2){
+      dir.y *= -1;
+      return true;
+    }
+    if(edges[1] && dist(cell.i * cell.size, cell.j * cell.size + cell.size, pos.x, pos.y) < 2){
+      dir.y *= -1;
+      return true;
+    }
+    if(edges[2] && dist(cell.i * cell.size + cell.size, cell.j * cell.size, pos.x, pos.y) < 2){
+      dir.y *= -1;
+      return true;
+    }
+    if(edges[3] && dist(cell.i * cell.size + cell.size, cell.j * cell.size + cell.size, pos.x, pos.y) < 2){
+      dir.y *= -1;
+      return true;
+    }
     return false; 
   }
   

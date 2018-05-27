@@ -40,10 +40,4 @@ class Cell{
     }
     return true;
   }
-  
-  void highlight(){
-    noStroke();
-    fill(255, 0, 0, 30);
-    rect(i * size, j * size, size, size);
-  }
 }

@@ -9,6 +9,8 @@ class Tank{
   int shoot;
   int down;
   
+  int score;
+  
   int w = width / 45;
   int h = width / 60;
     
@@ -26,6 +28,12 @@ class Tank{
     shoot = _shoot;
     speedfactor = 1;
     col = _col;
+    score = 0;
+  }
+  
+  void revive(PVector _pos, PVector _dir){
+    dir = _dir.normalize();
+    pos = _pos;
   }
   
   void update(boolean[] pressed, Cell cell, boolean[] edges){
@@ -41,11 +49,11 @@ class Tank{
       speedfactor = 1.5;
     }
     
-    if(pressed[left]) dir.rotate(-0.03);
-    if(pressed[right]) dir.rotate(0.03);
+    if(speedfactor > 5) speedfactor = 5;
+    if(pressed[left]) dir.rotate(-0.05);
+    if(pressed[right]) dir.rotate(0.05);
     if(pressed[shoot]);
-    cell.highlight();
-  }
+}
   
   boolean collide(PVector pos, Cell cell, boolean[] edges){ //edges is TL BL TR BR
     int x = cell.i * cell.size;
@@ -62,7 +70,7 @@ class Tank{
       (edges[3] && dist(cell.i * cell.size + cell.size, cell.j * cell.size + cell.size, pos.x, pos.y) < h / 2)){
       return true;
     }
-    else{
+    else {
      return false; 
     }
   }
@@ -107,6 +115,8 @@ class Tank{
     stroke(120);
     strokeWeight(3);
     rect(-w/ 2, -h/ 2, w, h);
+    fill(40);
+    rect(0, -2, w * 2 / 3, 5);
     popMatrix();
   }
 }
